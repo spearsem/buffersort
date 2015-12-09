@@ -164,9 +164,8 @@ cdef void _selection_sort(Ord[:] buf, int size):
 
 def selection_sort(Ord[:] sortable):
     """
-    Apply selection sort to sort buffer-supporting type `sortable`. The base
-    data type stored in `sortable` must be a member of the `Ord` fused type as
-    defined in cylib_sort.pyx.
+    Apply selection sort to sort buffer-supporting type `sortable`. The base 
+    data stored in `sortable` must be a member of the Cython `Ord` fused type.
     """
     cdef Ord[:] buf = sortable
     _selection_sort(buf, len(buf))
