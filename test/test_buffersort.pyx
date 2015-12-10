@@ -53,28 +53,28 @@ class TestBufferSort(unittest.TestCase):
 # C tests #
 ###########
     
-    def test__partition(Ord[:] buf, int start, int end):
+    def test__partition(self):
         pass
 
-    def test__swap(Ord[:] buf, int i, int j):
+    def test__swap(self):
         pass
 
-    def test__sift_up(Ord[:] buf, int n):
+    def test__sift_up(self):
         pass
 
-    def test__sift_down(Ord key, Ord[:] buf, int root, int last):
+    def test__sift_down(self):
         pass
 
-    def test__selection_sort(Ord[:] buf, int size):
+    def test__selection_sort(self):
         pass
 
-    def test__insertion_sort(Ord[:] buf, int size):
+    def test__insertion_sort(self):
         pass
 
-    def test__quick_sort(Ord[:] buf, int start, int end):
+    def test__quick_sort(self):
         pass
 
-    def test__heap_sort(Ord[:] buf, int size):
+    def test__heap_sort(self):
         pass
 
 
@@ -83,16 +83,16 @@ class TestBufferSort(unittest.TestCase):
 # Pure Python tests #
 #####################
 
-    def test_selection_sort(Ord[:] buf, int size):
+    def test_selection_sort(self):
         pass
 
-    def test_insertion_sort(Ord[:] buf, int size):
+    def test_insertion_sort(self):
         pass
 
-    def test_quick_sort(Ord[:] buf, int start, int end):
+    def test_quick_sort(self):
         pass
 
-    def test_heap_sort(Ord[:] buf, int size):
+    def test_heap_sort(self):
         pass
     
 
