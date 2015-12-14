@@ -1,11 +1,11 @@
 import unittest
 import numpy as np
+
 from array import array
+from generate_tests import generate_test_arrays
 
 from .. import buffersort as bsort_py
 from .. cimport buffersort as bsort_c
-
-np.random.seed(0)
 
 class TestBufferSort(unittest.TestCase):
     """
@@ -13,41 +13,33 @@ class TestBufferSort(unittest.TestCase):
     """
     def setUp(self):
         """
-        Prepare data for test cases.
+        Prepare data for test cases. Test cases are generated randomly for
+        each type that may appear as the base type of the underlying 
+        memoryview, as defined by the Cython fused type `Ord` in 
+        buffersort.pxd. Set up parameters controlling the size of each test 
+        case and the range of values from which to draw are used to customize 
+        test behavior.
         """
-        
-        empty = []
-        
-        # ints, shorts, longs, and longlongs
-        sorted_ints_even = [1, 2, 3, 4]
-        sorted_ints_odd = [1, 2, 3, 4, 5]
+        self.cases_per_type = 10
+        self.size_per_case = 25
+        self.int_range = (-100, 100)
+        self.uint_range = (0, 100)
+        self.char_range = (0, 255)
+        self.double_range = (-100.0, 100.0)
 
-        antisorted_ints_even = [4, 3, 2, 1]
-        antisorted_ints_odd = [5, 4, 3, 2, 1]
+        tc, tr = generate_test_arrays(self.int_range, 
+                                      self.uint_range, 
+                                      self.char_range, 
+                                      self.double_range, 
+                                      self.size_per_case,
+                                      self.cases_per_type)
 
-        random_ints_even = np.asarray(np.random.randint(10, size=10), dtype=np.int32)
-        random_ints_odd = np.asarray(np.random.randint(10, size=11), dtype=np.int32)
-
-        constant_ints_even = [1, 1, 1, 1, 1]
-        constant_ints_odd = [1, 1, 1, 1, 1]
-
-        # doubles and longdoubles
-        sorted_doubles_even = [1.1, 2.2, 3.3, 4.4]
-        sorted_doubles_odd = [1.1, 2.2, 3.3, 4.4, 5.5]
-
-        antisorted_doubles_even = [4.4, 3.3, 2.2, 1.1]
-        antisorted_doubles_odd = [5.5, 4.4, 3.3, 2.2, 1.1]
-
-        random_doubles_even = np.random.rand()
-        random_doubles_odd = np.random.rand()
-
-        large_doubles_even = 1000000 * np. random.rand()
-        large_doubles_odd = 1000000 * np. random.rand()
-
-        # Chars
-        
-        
-        
+        # These are dictionaries with types as keys and lists-of-buffers as 
+        # values. For some type t, self.test_truth[t][i] is the sorted version
+        # of self.test_cases[t][i], using NumPy `sort` as the base sort 
+        # algorithm
+        self.test_cases = tc
+        self.test_truth = tr
 
 ###########
 # C tests #
