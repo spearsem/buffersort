@@ -61,7 +61,7 @@ def make_random_float_array(val_range, size, dtype):
     if dtype not in _FLOAT_TYPECODE_MAP:
         raise ValueError("Data type not supported for array.array: %s"%(dtype))
 
-    a, s_a = make_random_char_nparray(val_range, size, dtype)
+    a, s_a = make_random_float_nparray(val_range, size, dtype)
     arr = array(_FLOAT_TYPECODE_MAP[dtype], a.tolist())
     s_arr = array(_FLOAT_TYPECODE_MAP[dtype], s_a.tolist())
     return (arr, s_arr)
