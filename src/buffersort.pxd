@@ -1,6 +1,10 @@
 cimport cython
+cimport cpython.array
 
+# Fused type definition mimicking Haskell's Ord typeclass.
+# These are base datatypes permitted in buffers seeking to be sorted.
 ctypedef fused Ord:
+    # Basic types
     bytes
     cython.int
     cython.sint
@@ -17,6 +21,7 @@ ctypedef fused Ord:
     cython.float
     cython.double
     cython.longdouble
+    
 
 cdef  int _partition(Ord[:] buf, int start, int end)
 cdef void _swap(Ord[:] buf, int i, int j)

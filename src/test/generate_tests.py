@@ -1,26 +1,36 @@
+import sys
 import numpy as np
 from array import array
 
+# Python 2/3 safety for buffer access on array.array.
+if sys.version_info >= (3,):
+    buffer = memoryview
+
 np.random.seed(0)
 
-_INT_TYPES = (np.int8, np.int16, np.int32, np.int64)
+_INT_TYPES = (int, np.int8, np.int16, np.int32, np.int64)
 _UNSIGNED_INT_TYPES = (np.uint16, np.uint32, np.uint64)
 _CHAR_TYPES = (np.uint8,)
-_FLOAT_TYPES = (np.double, np.float16, np.float32, np.float64, np.float128)
+_FLOAT_TYPES = (float, np.double, np.float32, np.float64, np.float128)
 
 # Map type names to the codes required by array.array
-_INT_TYPECODE_MAP = {np.int8:'b',
+_INT_TYPECODE_MAP = {int:'l',
+                     np.int8:'b',
                      np.uint8:'B',
                      np.int16:'h',
                      np.uint16:'H',
                      np.int32:'l',
-                     np.uint32:'L'}
+                     np.uint32:'L',
+                     np.int64:'l',
+                     np.uint64:'L'}
 
 _CHAR_TYPECODE_MAP = {np.uint8:'c'}
 
-_FLOAT_TYPECODE_MAP = {np.float:'f',
+_FLOAT_TYPECODE_MAP = {float:'d',
+                       np.float:'f',
                        np.float32:'f',
                        np.float64:'d',
+                       np.float128:'d',
                        np.double:'d'}
 
 _DTYPES = _INT_TYPES + _UNSIGNED_INT_TYPES + _CHAR_TYPES + _FLOAT_TYPES
@@ -66,19 +76,28 @@ def make_random_float_array(val_range, size, dtype):
     s_arr = array(_FLOAT_TYPECODE_MAP[dtype], s_a.tolist())
     return (arr, s_arr)
 
+
+# Ensure sorting takes place after bytearray for the following bytearray
+# creation routines.
+
 def make_random_int_bytearray(val_range, size, dtype):
-    a, s_a = make_random_int_nparray(val_range, size, dtype)
-    return (bytearray(a), bytearray(s_a))
+    a, _ = make_random_int_nparray(val_range, size, dtype)
+    b = bytearray(a)
+    s_b = bytearray(sorted(b)) 
+    return (b, s_b)
     
 def make_random_char_bytearray(val_range, size, dtype):
     # Note this uses 'array' and not 'nparray' to ensure true char type.
-    arr, s_arr = make_random_char_array(val_range, size, dtype)
-    return (bytearray(arr), bytearray(s_arr))
+    a, _ = make_random_char_array(val_range, size, dtype)
+    b = bytearray(buffer(a))
+    s_b = bytearray(sorted(b))
+    return (b, s_b)
 
 def make_random_float_bytearray(val_range, size, dtype):
-    a, s_a = make_random_float_nparray(val_range, size, dtype)
-    return (bytearray(a), bytearray(s_a))
-
+    a, _ = make_random_float_nparray(val_range, size, dtype)
+    b = bytearray(a)
+    s_b = bytearray(sorted(b))
+    return (b, s_b)
 
 def make_test_cases_for_type(array_makers, num_cases, type_range, size, dtype):
     """
@@ -101,6 +120,35 @@ def make_test_cases_for_type(array_makers, num_cases, type_range, size, dtype):
         
     return array_cases, truth_cases
 
+def make_empty(dtype):
+    """
+    Create a function that accepts a type of buffer (e.g. 'array' or 'nparray')
+    and returns an empty buffer with the underlying dtype of `dtype`. The 
+    function is returned to be called later.
+    """
+    def empty_function(array_type):
+
+        type_code = _INT_TYPECODE_MAP.get(
+            dtype, 
+            _CHAR_TYPECODE_MAP.get(dtype,
+                                   _FLOAT_TYPECODE_MAP.get(dtype, None))
+        )
+
+        if type_code is None:
+            raise ValueError("Unsupported buffer base type %s"%(dtype))
+
+        a = array(type_code)
+
+        if array_type == "array":
+            return a
+        elif array_type == "nparray":
+            return np.array(a, dtype=dtype)
+        elif array_type == "bytearray":
+            return bytearray(buffer(a))
+        else:
+            raise ValueError("Unrecognized buffer type %s"%(array_type))
+
+    return empty_function
 
 def generate_test_arrays(int_range, 
                          uint_range, 
@@ -149,7 +197,13 @@ def generate_test_arrays(int_range,
                                                            type_range, 
                                                            size_per_case, 
                                                            dtype)
+
+        empty_cases = map(make_empty(dtype), ['array', 'nparray', 'bytearray'])
+
+        test_cases.extend(empty_cases)
+        test_truths.extend(empty_cases)
         
         cases[dtype] = test_cases
         sorted_truth[dtype] = test_truths
+
     return cases, sorted_truth

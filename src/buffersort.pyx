@@ -5,6 +5,7 @@ described in `Data Structures in C` by Noel Kalicharan unless otherwise
 documented.
 """
 # Declarations in buffersort.pxd
+cimport cpython.array
 
 cdef int _partition(Ord[:] buf, int start, int end):
     """
@@ -167,8 +168,9 @@ def selection_sort(Ord[:] sortable):
     Apply selection sort to sort buffer-supporting type `sortable`. The base 
     data stored in `sortable` must be a member of the Cython `Ord` fused type.
     """
-    if sortable:
-        cdef Ord[:] buf = sortable
+    cdef Ord[:] buf 
+    if len(sortable) > 0:
+        buf = sortable
         _selection_sort(buf, len(buf))
 
 cdef void _insertion_sort(Ord[:] buf, int size):
@@ -206,8 +208,9 @@ def insertion_sort(Ord[:] sortable):
     Apply insertion sort to sort buffer-supporting type `sortable`. The base 
     data stored in `sortable` must be a member of the Cython `Ord` fused type.
     """
-    if sortable:
-        cdef Ord[:] buf = sortable
+    cdef Ord[:] buf 
+    if len(sortable) > 0:
+        buf = sortable
         _insertion_sort(buf, len(buf))
 
 cdef void _quick_sort(Ord[:] buf, int start, int end):
@@ -231,8 +234,9 @@ def quick_sort(Ord[:] sortable):
     Apply quick sort to sort buffer-supporting type `sortable`. The base data
     stored in `sortable` must be a member of the Cython `Ord` fused type.
     """
-    if sortable:
-        cdef Ord[:] buf = sortable
+    cdef Ord[:] buf 
+    if len(sortable) > 0:
+        buf = sortable
         _quick_sort(buf, 0, len(buf)-1)
 
 
@@ -280,7 +284,8 @@ def heap_sort(Ord[:] sortable):
     Apply heap sort to sort buffer-supporting type `sortable`. The base data
     stored in `sortable` must be a member of the Cython `Ord` fused type.
     """
-    if sortable:
-        cdef Ord[:] buf = sortable
+    cdef Ord[:] buf 
+    if len(sortable) > 0:
+        buf = sortable
         _heap_sort(buf, len(buf))
 
