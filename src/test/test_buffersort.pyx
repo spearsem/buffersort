@@ -5,6 +5,8 @@ import numpy as np
 from array import array
 from generate_tests import generate_test_arrays
 
+cimport cpython.array
+
 from .. import buffersort as bsort_py
 from .. cimport buffersort as bsort_cy
 
@@ -110,25 +112,31 @@ class TestBufferSort(unittest.TestCase):
             test_truth = self.test_truth[type_name]
 
             # Mutate the copies with the sorting algorithm. 
-            map(sort_fn, test_copies)
+            #map(sort_fn, test_copies)
+
+            # Temporary debugging code to find when Cython fused
+            # types are not resulting in needed type signatures.
+            for itm in test_copies:
+                try:
+                    sort_fn(itm)
+                except:
+                    print type_name
+                    print type(itm)
+                    print len(itm)
 
             # Assert that mutated copies match ground truth sorted data.
             for i, case in enumerate(test_copies):
+                err_msg = self.sort_msg%(sort_name, type(case), type_name)
+
                 try:
-                    self.assertSequenceEqual(
-                        case, 
-                        test_truth[i],
-                        self.sort_msg%(sort_name, type(case), type_name)
-                    )
+                    self.assertSequenceEqual(case, test_truth[i], err_msg)
 
                 # Note that assertSequenceEqual fails for numpy arrays, so
                 # attempt to failover to taking a list of the contents.
                 except ValueError:
-                    self.assertSequenceEqual(
-                        list(case), 
-                        list(test_truth[i]),
-                        self.sort_msg%(sort_name, type(case), type_name)
-                    )
+                    self.assertSequenceEqual(list(case), 
+                                             list(test_truth[i]),
+                                             err_msg)
 
 
     #########################################################################
@@ -148,7 +156,7 @@ class TestBufferSort(unittest.TestCase):
         self._generic_py_sort_test("heap_sort")
 
 
-# Wrapper for unittest tricks to enable running tests as package.
+# Wrapper for unittest tricks to enable running tests in the imported package.
 def run_tests():
     test_suite = unittest.TestLoader().loadTestsFromTestCase(TestBufferSort)
     unittest.TextTestRunner(verbosity=3).run(test_suite)

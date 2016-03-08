@@ -8,30 +8,25 @@ if sys.version_info >= (3,):
 
 np.random.seed(0)
 
-_INT_TYPES = (int, np.int8, np.int16, np.int32, np.int64)
-_UNSIGNED_INT_TYPES = (np.uint16, np.uint32, np.uint64)
-_CHAR_TYPES = (np.uint8,)
-_FLOAT_TYPES = (float, np.double, np.float32, np.float64, np.float128)
+_CHAR_TYPES         = (np.int8, np.uint8, np.ubyte)
+_INT_TYPES          = (np.int8, np.int16, np.int32, np.int64)
+_UNSIGNED_INT_TYPES = (np.uint8, np.uint16, np.uint32, np.uint64)
+_FLOAT_TYPES        = (np.double, np.float32, np.float64, np.float128)
 
 # Map type names to the codes required by array.array
-_INT_TYPECODE_MAP = {int:'l',
-                     np.int8:'b',
-                     np.uint8:'B',
-                     np.int16:'h',
-                     np.uint16:'H',
-                     np.int32:'l',
-                     np.uint32:'L',
-                     np.int64:'l',
-                     np.uint64:'L'}
+_CHAR_TYPECODE_MAP  = {np.int8:'c',
+                       np.uint8:'c', 
+                       np.ubyte:'c'}
 
-_CHAR_TYPECODE_MAP = {np.uint8:'c'}
+_INT_TYPECODE_MAP   = {np.int8:'b',
+                       np.uint8:'B',
+                       np.int16:'h',
+                       np.uint16:'H',
+                       np.int32:'l',
+                       np.uint32:'L'}
 
-_FLOAT_TYPECODE_MAP = {float:'d',
-                       np.float:'f',
-                       np.float32:'f',
-                       np.float64:'d',
-                       np.float128:'d',
-                       np.double:'d'}
+_FLOAT_TYPECODE_MAP = {np.float32:'f',
+                       np.float64:'d'}
 
 _DTYPES = _INT_TYPES + _UNSIGNED_INT_TYPES + _CHAR_TYPES + _FLOAT_TYPES
 

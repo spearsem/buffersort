@@ -4,8 +4,19 @@ implementing the Python buffer protocol. Code is based on the algorithms
 described in `Data Structures in C` by Noel Kalicharan unless otherwise
 documented.
 """
-# Declarations in buffersort.pxd
-cimport cpython.array
+import sys
+import numpy as np
+
+
+cimport cython
+cimport cpython.array # Importing this allows memoryview assignment to
+                      # just work for built-in array.array types.
+
+
+# Python 2/3 safe version for use of buffer keyword for buffer interface.
+if sys.version_info >= (3,):
+    buffer = memoryview
+
 
 cdef int _partition(Ord[:] buf, int start, int end):
     """
@@ -45,6 +56,7 @@ cdef int _partition(Ord[:] buf, int start, int end):
     # Return the position that the pivot value was placed into.
     return num_lower
 
+
 cdef void _swap(Ord[:] buf, int i, int j):
     """
     Swap elements i and j in buffer buf.
@@ -52,6 +64,7 @@ cdef void _swap(Ord[:] buf, int i, int j):
     cdef Ord temp = buf[i]
     buf[i] = buf[j]
     buf[j] = temp
+
 
 cdef void _sift_up(Ord[:] buf, int n):
     """
@@ -92,6 +105,7 @@ cdef void _sift_up(Ord[:] buf, int n):
     # Once we've broken, it means the insert item is acceptable as a child at
     # the current 'child' location.
     buf[child] = sift_item
+
 
 cdef void _sift_down(Ord key, Ord[:] buf, int root, int last):
     """
@@ -143,6 +157,7 @@ cdef void _sift_down(Ord key, Ord[:] buf, int root, int last):
     # any displaced values up the heap as necessary.
     buf[root] = key
 
+
 cdef void _selection_sort(Ord[:] buf, int size):
     """
     Iteratively find the location of the minimum entry of the tails of the
@@ -163,15 +178,6 @@ cdef void _selection_sort(Ord[:] buf, int size):
         # Once min location is known, swap it into the current position.
         _swap(buf, i, min_loc)
 
-def selection_sort(Ord[:] sortable):
-    """
-    Apply selection sort to sort buffer-supporting type `sortable`. The base 
-    data stored in `sortable` must be a member of the Cython `Ord` fused type.
-    """
-    cdef Ord[:] buf 
-    if len(sortable) > 0:
-        buf = sortable
-        _selection_sort(buf, len(buf))
 
 cdef void _insertion_sort(Ord[:] buf, int size):
     """
@@ -203,15 +209,6 @@ cdef void _insertion_sort(Ord[:] buf, int size):
         # lesser.
         buf[k+1] = temp
 
-def insertion_sort(Ord[:] sortable):
-    """
-    Apply insertion sort to sort buffer-supporting type `sortable`. The base 
-    data stored in `sortable` must be a member of the Cython `Ord` fused type.
-    """
-    cdef Ord[:] buf 
-    if len(sortable) > 0:
-        buf = sortable
-        _insertion_sort(buf, len(buf))
 
 cdef void _quick_sort(Ord[:] buf, int start, int end):
     """
@@ -228,16 +225,6 @@ cdef void _quick_sort(Ord[:] buf, int start, int end):
         # the pivot location, respectively.
         _quick_sort(buf, start, partition_point-1)
         _quick_sort(buf, partition_point+1, end)
-
-def quick_sort(Ord[:] sortable):
-    """
-    Apply quick sort to sort buffer-supporting type `sortable`. The base data
-    stored in `sortable` must be a member of the Cython `Ord` fused type.
-    """
-    cdef Ord[:] buf 
-    if len(sortable) > 0:
-        buf = sortable
-        _quick_sort(buf, 0, len(buf)-1)
 
 
 cdef void _heap_sort(Ord[:] buf, int size):
@@ -279,13 +266,65 @@ cdef void _heap_sort(Ord[:] buf, int size):
         # swapping entry 0 to the end will work for sorting.
         _sift_down(item, buf, 0, k-1)
 
-def heap_sort(Ord[:] sortable):
+
+def _dispatch(Ord[:] buf, basestring method_name):
+    if method_name == "heapsort":
+        _heap_sort(buf, len(buf))
+
+    elif method_name == "quicksort":
+        _quick_sort(buf, 0, len(buf)-1)
+
+    elif method_name == "insertionsort":
+        _insertion_sort(buf, len(buf))
+
+    elif method_name == "selectionsort":
+        _selection_sort(buf, len(buf))
+
+    else:
+        msg = ("Sort method %s is not implemented. "
+               "Check option spelling."%(method_name))
+        raise NotImplementedError(msg)
+
+
+def _sort(sortable, method_name):
+    if len(sortable) <= 0:
+        return
+
+    if isinstance(sortable, bytearray):
+        buf = np.frombuffer(sortable, dtype=np.ubyte)
+    else:
+        buf = buffer(sortable)
+
+    _dispatch(buf, method_name)
+
+
+def selection_sort(sortable):
+    """
+    Apply selection sort to sort buffer-supporting type `sortable`. The base 
+    data stored in `sortable` must be a member of the Cython `Ord` fused type.
+    """
+    _sort(sortable, "selectionsort")
+
+
+def insertion_sort(sortable):
+    """
+    Apply insertion sort to sort buffer-supporting type `sortable`. The base 
+    data stored in `sortable` must be a member of the Cython `Ord` fused type.
+    """
+    _sort(sortable, "insertionsort")
+
+
+def quick_sort(sortable):
+    """
+    Apply quick sort to sort buffer-supporting type `sortable`. The base data
+    stored in `sortable` must be a member of the Cython `Ord` fused type.
+    """
+    _sort(sortable, "quicksort")
+        
+        
+def heap_sort(sortable):
     """
     Apply heap sort to sort buffer-supporting type `sortable`. The base data
     stored in `sortable` must be a member of the Cython `Ord` fused type.
     """
-    cdef Ord[:] buf 
-    if len(sortable) > 0:
-        buf = sortable
-        _heap_sort(buf, len(buf))
-
+    _sort(sortable, "heapsort")
