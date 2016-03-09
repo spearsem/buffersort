@@ -1,4 +1,6 @@
 import os
+import numpy as np
+
 from distutils.core import setup, Extension
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
@@ -20,7 +22,7 @@ def mkExt(extName):
     extPath = extName.replace(".", os.path.sep) + ".pyx"
     return Extension(extName,
                      [extPath],
-                     include_dirs=["."],
+                     include_dirs=[np.get_include(), "."],
                      extra_compile_agrs=["-O3", "-Wall"])
 
 extNames = findExtFiles("src")

@@ -7,6 +7,7 @@ documented.
 import sys
 import numpy as np
 
+from array import array
 
 cimport cython
 cimport cpython.array # Importing this allows memoryview assignment to
@@ -268,6 +269,17 @@ cdef void _heap_sort(Ord[:] buf, int size):
 
 
 def _dispatch(Ord[:] buf, basestring method_name):
+    """
+    Python intermediary function that has a first argument typed as an
+    Ord[:] typed memoryview and the second, generic string argument specifies
+    the name of a sorting algorithm to be used to in-place sort the underlying
+    data of the typed memoryview.
+
+    Since the Cython typed memoryview mechanism works by implicitly casting
+    the passed object to a _memoryviewslice object at call time, the Python
+    type information of `buf` is effectively lost inside this function.
+    """
+
     if method_name == "heapsort":
         _heap_sort(buf, len(buf))
 
@@ -287,21 +299,65 @@ def _dispatch(Ord[:] buf, basestring method_name):
 
 
 def _sort(sortable, method_name):
+    """
+    Python intermediary function to marshal data to the _dispatch function. 
+    This is needed because _dispatch requires fully typed arguments, as it
+    further makes calls to the C-layer individual sort functions. This means
+    that whenever any function makes a call to _dispatch, the first argument
+    will be treated as an Ord[:] typed memoryview, and Python run time type
+    information will be lost. If any run time type logic is needed, it has
+    to be performed here, in _sort, in advance of the call to _dispatch.
+
+    Example marshaling logic includes the special case handling of the Python
+    `bytearray` type. Natively, this type is implemented with C char values,
+    which can be signed or unsigned depending on the implementation and the
+    compiler used. However, since the Python-level meaning of a bytearray is
+    always unsigned, it means that a naive C-level sort might produce and
+    incorrect result, and could produce data sorted by the 2's complement of
+    the actual unsigned values in the bytearray.
+
+    _sort circumvents this by doing a Python-layer run time check to see if
+    the buffer that is being sorted is a bytearray. If so, the data is shared
+    (via the buffer interface) with a NumPy array created with unsigned type,
+    and this buffer is passed on for dispatching to the correct sort function.
+    """
+
+    # Fail early if the argument to be sorted doesn't support buffer interface
+    # or else is immutable.
+    try:
+        b = buffer(sortable)
+        assert not memoryview(sortable).readonly
+    except:
+        raise ValueError(
+            "Attempted to do in-place sort on object < %s > that either is "
+            "immutable or lacks buffer interface."%(sortable)
+        )
+
+    # Do nothing if given zero-length buffer to sort.
     if len(sortable) <= 0:
         return
 
+    # Address the issue of unsigned byte data from bytearray, as mentioned in
+    # the docstring.
     if isinstance(sortable, bytearray):
-        buf = np.frombuffer(sortable, dtype=np.ubyte)
+        tmp_s = np.frombuffer(sortable, dtype=np.ubyte)
     else:
-        buf = buffer(sortable)
+        tmp_s = sortable
 
-    _dispatch(buf, method_name)
+    # After all pre-processing, submit for dispatch to correct sort algorithm.
+    # Note that since the arguments to _dispatch are typed, this can generate
+    # type errors, and also will lose type information for `tmp_s` by virtue
+    # of treating it immediately as an Ord[:] (a _memoryviewslice in Cython).
+    _dispatch(tmp_s, method_name)
 
+
+##### Convenience functions for available sort methods.
 
 def selection_sort(sortable):
     """
     Apply selection sort to sort buffer-supporting type `sortable`. The base 
-    data stored in `sortable` must be a member of the Cython `Ord` fused type.
+    data stored in `sortable` must be a member of the buffersort.pxd `Ord` 
+    fused type.
     """
     _sort(sortable, "selectionsort")
 
@@ -309,7 +365,8 @@ def selection_sort(sortable):
 def insertion_sort(sortable):
     """
     Apply insertion sort to sort buffer-supporting type `sortable`. The base 
-    data stored in `sortable` must be a member of the Cython `Ord` fused type.
+    data stored in `sortable` must be a member of the buffersort.pxd `Ord` 
+    fused type.
     """
     _sort(sortable, "insertionsort")
 
@@ -317,7 +374,8 @@ def insertion_sort(sortable):
 def quick_sort(sortable):
     """
     Apply quick sort to sort buffer-supporting type `sortable`. The base data
-    stored in `sortable` must be a member of the Cython `Ord` fused type.
+    stored in `sortable` must be a member of the buffersort.pxd `Ord` fused 
+    type.
     """
     _sort(sortable, "quicksort")
         
@@ -325,6 +383,7 @@ def quick_sort(sortable):
 def heap_sort(sortable):
     """
     Apply heap sort to sort buffer-supporting type `sortable`. The base data
-    stored in `sortable` must be a member of the Cython `Ord` fused type.
+    stored in `sortable` must be a member of the buffersort.pxd `Ord` fused
+    type.
     """
     _sort(sortable, "heapsort")

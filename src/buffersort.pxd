@@ -1,7 +1,7 @@
 cimport cython
 cimport cpython.array
 
-cimport numpy as np
+cimport numpy as cnp
 
 # Fused type definition mimicking Haskell's Ord typeclass.
 # These are base datatypes permitted in buffers seeking to be sorted.
