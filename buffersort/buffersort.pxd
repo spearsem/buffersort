@@ -6,7 +6,6 @@ cimport numpy as cnp
 # Fused type definition mimicking Haskell's Ord typeclass.
 # These are base datatypes permitted in buffers seeking to be sorted.
 ctypedef fused Ord:
-    # Basic types
     bytes
     cython.int
     cython.sint
@@ -18,8 +17,10 @@ ctypedef fused Ord:
     cython.slong
     cython.longlong
     cython.slonglong
+    cython.ulonglong
     cython.short
     cython.sshort
+    cython.ushort
     cython.float
     cython.double
     cython.longdouble

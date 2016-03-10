@@ -23,7 +23,7 @@ class TestBufferSort(unittest.TestCase):
         case and the range of values from which to draw are used to customize 
         test behavior.
         """
-        self.sort_msg = "%s failed for a (%s) buffer of data type %s"
+        self.sort_msg = "%s failed for a (%s) buffer of data type %s: \n%s"
 
         self.cases_per_type = 10
         self.size_per_case = 25
@@ -112,8 +112,9 @@ class TestBufferSort(unittest.TestCase):
             test_truth = self.test_truth[type_name]
 
             # Mutate the copies with the sorting algorithm. 
-            #map(sort_fn, test_copies)
+            map(sort_fn, test_copies)
 
+            """
             # Temporary debugging code to find when Cython fused
             # types are not resulting in needed type signatures.
             for itm in test_copies:
@@ -123,20 +124,25 @@ class TestBufferSort(unittest.TestCase):
                     print type_name
                     print type(itm)
                     print len(itm)
+            """
 
             # Assert that mutated copies match ground truth sorted data.
             for i, case in enumerate(test_copies):
-                err_msg = self.sort_msg%(sort_name, type(case), type_name)
-
-                try:
-                    self.assertSequenceEqual(case, test_truth[i], err_msg)
+                
+                err_msg = self.sort_msg%(sort_name, 
+                                         type(case), 
+                                         type_name, 
+                                         case)
 
                 # Note that assertSequenceEqual fails for numpy arrays, so
-                # attempt to failover to taking a list of the contents.
-                except ValueError:
+                # workaround with a list of the contents.
+                if isinstance(case, np.ndarray):
                     self.assertSequenceEqual(list(case), 
                                              list(test_truth[i]),
                                              err_msg)
+                else:
+                    self.assertSequenceEqual(case, test_truth[i], err_msg)
+                    
 
 
     #########################################################################

@@ -322,17 +322,6 @@ def _sort(sortable, method_name):
     and this buffer is passed on for dispatching to the correct sort function.
     """
 
-    # Fail early if the argument to be sorted doesn't support buffer interface
-    # or else is immutable.
-    try:
-        b = buffer(sortable)
-        assert not memoryview(sortable).readonly
-    except:
-        raise ValueError(
-            "Attempted to do in-place sort on object < %s > that either is "
-            "immutable or lacks buffer interface."%(sortable)
-        )
-
     # Do nothing if given zero-length buffer to sort.
     if len(sortable) <= 0:
         return
@@ -349,6 +338,8 @@ def _sort(sortable, method_name):
     # type errors, and also will lose type information for `tmp_s` by virtue
     # of treating it immediately as an Ord[:] (a _memoryviewslice in Cython).
     _dispatch(tmp_s, method_name)
+
+        
 
 
 ##### Convenience functions for available sort methods.

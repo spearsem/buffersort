@@ -23,10 +23,14 @@ _INT_TYPECODE_MAP   = {np.int8:'b',
                        np.int16:'h',
                        np.uint16:'H',
                        np.int32:'l',
-                       np.uint32:'L'}
+                       np.uint32:'L',
+                       np.int64:'l',
+                       np.uint64:'L'}
 
 _FLOAT_TYPECODE_MAP = {np.float32:'f',
-                       np.float64:'d'}
+                       np.float64:'d',
+                       np.float128:'d',
+                       np.double:'d'}
 
 _DTYPES = _INT_TYPES + _UNSIGNED_INT_TYPES + _CHAR_TYPES + _FLOAT_TYPES
 
