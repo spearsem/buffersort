@@ -5,10 +5,6 @@ from distutils.core import setup, Extension
 from Cython.Build import cythonize
 from Cython.Distutils import build_ext
 
-# Naive build from top directory.
-#sort = Extension("buffersort", sources=["buffersort.pyx"])
-#etup(name="buffersort", ext_modules=cythonize([bsort]))
-
 def findExtFiles(srcDir, files=[]):
     for each_file in os.listdir(srcDir):
         path = os.path.join(srcDir, each_file)
@@ -25,7 +21,7 @@ def mkExt(extName):
                      include_dirs=[np.get_include(), "."],
                      extra_compile_agrs=["-O3", "-Wall"])
 
-extNames = findExtFiles("src")
+extNames = findExtFiles("buffersort")
 extensions = map(mkExt, extNames)
 
 setup(name="buffersort",
