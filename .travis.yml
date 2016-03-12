@@ -30,7 +30,7 @@ install:
       numpy=1.10.1 
       cython>=0.22
 
-  - source activate test-env
+  - source activate testenv
   - python setup.py install
 
 script:
