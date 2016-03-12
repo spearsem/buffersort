@@ -4,7 +4,10 @@
 Provide a variety of sorting algorithms that operate in-place on types that implement the Python buffer protocol.
 
 ## install
-Pip and/or conda instructions are forthcoming. For now, simply clone the repo, navigate to the top-level directory where you can find `setup.py` and use
+`buffersort` requires Cython >= 0.22 and NumPy >= 1.10.1. `buffersort` builds are [tested with travis-ci](https://travis-ci.org/spearsem/buffersort) for Python 2.7.11 and Python 3.5.0 on 64-bit Ubuntu 14.04.
+
+### basic
+Clone the repo, navigate to the top-level directory where you can find `setup.py` and use
 
 ```bash
 python setup.py install
@@ -16,9 +19,33 @@ If you'd like to preserve a copy of the files affected by installation so that y
 python setup.py install --record install-files.txt
 ```
 
-Currently, `buffersort` has only been tested with Python 2.7.11 on 64-bit Ubuntu 14.04, but the code is written to be cross-platform and Python 3 safe. Further testing and any version or platform-specific instructions are forthcoming.
+### conda
+If you'd like to install with `conda` you can use the `meta.yaml` specification that comes with the source code under the `info/` directory. The package is not yet hosted with Anaconda, so the installation retrieves the code from GitHub.
 
-`buffersort` requires Cython >= 0.22 and NumPy >= 1.10.1.
+To install with `conda` navigate to the top-level of the downloaded source and build the package locally.
+
+```bash
+conda build info
+```
+
+This will download the code and prepare a build within the internal package directories maintained by `conda`. It will not affect your local directory. The best practice is to create a new `conda` environment first, such as
+
+```bash
+conda create -n testBuffersort python=2.7 numpy>=1.10.1 cython>=0.22
+```
+
+Then use `source activate testBuffersort` to ensure that `conda` is installing `buffersort` into your test environment. If everything installs satisfactorally, you may delete the temporary environment and repeat installation into your working environment.
+
+After `conda build` finishes, the built packages must be installed to be available.
+
+```bash
+conda install --use-local buffersort
+```
+
+and `conda` will refer to the local build it maintains after the execution of `conda build` and this will be used for the installation.
+
+### pip
+Pip instructions are forthcoming.
 
 
 ## usage
