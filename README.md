@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/spearsem/buffersort.svg?branch=master)](https://travis-ci.org/spearsem/buffersort)
+
 # buffersort
 Provide a variety of sorting algorithms that operate in-place on types that implement the Python buffer protocol.
 
