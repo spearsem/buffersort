@@ -5,8 +5,6 @@ import numpy as np
 from array import array
 from generate_tests import generate_test_arrays
 
-cimport cpython.array
-
 from .. import buffersort as bsort_py
 from .. cimport buffersort as bsort_cy
 
@@ -113,18 +111,6 @@ class TestBufferSort(unittest.TestCase):
 
             # Mutate the copies with the sorting algorithm. 
             map(sort_fn, test_copies)
-
-            """
-            # Temporary debugging code to find when Cython fused
-            # types are not resulting in needed type signatures.
-            for itm in test_copies:
-                try:
-                    sort_fn(itm)
-                except:
-                    print type_name
-                    print type(itm)
-                    print len(itm)
-            """
 
             # Assert that mutated copies match ground truth sorted data.
             for i, case in enumerate(test_copies):

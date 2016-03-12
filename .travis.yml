@@ -1,0 +1,37 @@
+language: python
+
+python:
+  - "2.7"
+  - "3.5"
+
+install:
+  - sudo apt-get update
+
+  # Conditional get of the right miniconda script.
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+        wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh \
+          -O miniconda.sh;
+    else
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+          -O miniconda.sh;
+    fi
+
+  # Install miniconda and configure.
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+
+  - conda info -a
+
+  - conda create -q -n testenv \
+      python=$TRAVIS_PYTHON_VERSION \ 
+      numpy=1.10.1 \
+      cython>=0.22;
+
+  - source activate test-env
+  - python setup.py install
+
+script:
+  - python -c "import buffersort; buffersort.test_buffersort.run_tests()"
