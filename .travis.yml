@@ -33,4 +33,5 @@ install:
   - python setup.py install
 
 script:
+  - cd $HOME 
   - python -c "import buffersort; buffersort.test_buffersort.run_tests()"
