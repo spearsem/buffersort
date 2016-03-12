@@ -197,7 +197,9 @@ def generate_test_arrays(int_range,
                                                            size_per_case, 
                                                            dtype)
 
-        empty_cases = map(make_empty(dtype), ['array', 'nparray', 'bytearray'])
+        # Python 2/3 safety -- needs list().
+        empty_cases = list(map(make_empty(dtype), 
+                               ['array', 'nparray', 'bytearray']))
 
         test_cases.extend(empty_cases)
         test_truths.extend(empty_cases)

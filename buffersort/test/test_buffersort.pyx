@@ -109,8 +109,9 @@ class TestBufferSort(unittest.TestCase):
             test_copies = copy.deepcopy(self.test_cases[type_name])
             test_truth = self.test_truth[type_name]
 
-            # Mutate the copies with the sorting algorithm. 
-            map(sort_fn, test_copies)
+            # Mutate the copies with the sorting algorithm.
+            for t in test_copies:
+                sort_fn(t)
 
             # Assert that mutated copies match ground truth sorted data.
             for i, case in enumerate(test_copies):
