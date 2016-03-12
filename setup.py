@@ -22,7 +22,7 @@ def mkExt(extName):
                      extra_compile_agrs=["-O3", "-Wall"])
 
 extNames = findExtFiles("buffersort")
-extensions = map(mkExt, extNames)
+extensions = list(map(mkExt, extNames))
 
 setup(name="buffersort",
       packages=["buffersort", "buffersort.test"],
