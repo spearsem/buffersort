@@ -1,9 +1,9 @@
 package:
   name: buffersort
-  version: "0.0.1"
+  version: "0.0.2"
  
 source:
-  git_rev: v0.0.1
+  git_rev: v0.0.2
   git_url: https://github.com/spearsem/buffersort.git
 
 # Template for hosting from pypi instead.
@@ -24,7 +24,8 @@ test:
   imports:
     - buffersort
   commands:
-    - cd $HOME; python -c 'import buffersort; buffersort.test_buffersort.run_tests()'
+    - cd $HOME; python -c 'import buffersort;
+          buffersort.test_buffersort.run_tests(alert=True)'
  
 about:
   home: https://github.com/spearsem/buffersort

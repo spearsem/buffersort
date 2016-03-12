@@ -1,3 +1,4 @@
+import sys
 import copy
 import unittest
 import numpy as np
@@ -149,10 +150,18 @@ class TestBufferSort(unittest.TestCase):
         self._generic_py_sort_test("heap_sort")
 
 
-# Wrapper for unittest tricks to enable running tests in the imported package.
-def run_tests():
+def run_tests(alert=False):
+    """
+    Executes suite of `buffersort` unit tests. Optional argument `alert` 
+    (default False) can be set to any value with truthiness of True in order to
+    cause this function to invoke sys.exit with a return code of 0 if tests all
+    pass and a return code of 1 otherwise.
+    """
     test_suite = unittest.TestLoader().loadTestsFromTestCase(TestBufferSort)
-    unittest.TextTestRunner(verbosity=3).run(test_suite)
+    result = unittest.TextTestRunner(verbosity=3).run(test_suite)
+    if alert:
+        exit_code = 1 - int(result.wasSuccessful())
+        sys.exit(exit_code)
 
     
 if __name__ == "__main__":
