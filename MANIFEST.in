@@ -1,5 +1,4 @@
 include LICENSE.txt
-include README.md
 include requirements.txt
 recursive-include info *
 recursive-exclude info *~

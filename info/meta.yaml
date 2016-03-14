@@ -1,15 +1,15 @@
 package:
   name: buffersort
-  version: "0.0.4"
+  version: "0.0.5"
  
 source:
-  git_rev: v0.0.4
+  git_rev: v0.0.5
   git_url: https://github.com/spearsem/buffersort.git
 
 # Template for hosting from pypi instead.
-#fn: buffersort-0.0.1.tar.gz
-#md5: e347036acc50720c0903dc2221b2605d # or whatever the hash is.
-#url: pypi url for the package.
+#fn: buffersort-0.0.5.tar.gz
+#md5: # place hash checksum here.
+#url: https://pypi.python.org/pypi/buffersort/0.0.5
  
 requirements:
   build:
