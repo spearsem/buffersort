@@ -27,10 +27,7 @@ install:
 
   - conda info -a
 
-  - conda create -q -n testenv 
-      python=$TRAVIS_PYTHON_VERSION  
-      numpy=1.10.1 
-      cython>=0.22
+  - conda create -q -n testenv python=$TRAVIS_PYTHON_VERSION  --file requirements.txt
 
   - source activate testenv
   - python setup.py install
