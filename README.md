@@ -19,27 +19,25 @@ If you'd like to preserve a copy of the files affected by installation so that y
 python setup.py install --record install-files.txt
 ```
 
-### conda
-If you'd like to install with `conda` you can use the `meta.yaml` specification that comes with the source code under the `info/` directory. The package is not yet hosted with Anaconda, so the installation retrieves the code from GitHub. 
-
-To avoid downloading the code twice, you can instead merely download what you need for installation -- namely, `meta.yaml` and the relevant build script for your platform. Place these in a directory named `info` and the commands below will work just as if you had cloned the entire repo.
-
-Before installing, the best practice is to create a new `conda` environment first, such as
+### pip
+`buffersort` is available at PyPI. The following command also works when you have activated a `conda` environment, should you prefer to install from PyPI under `conda`.
 
 ```bash
-conda create -n testBuffersort python=2.7 numpy>=1.10.1 cython>=0.22
+pip install buffersort
 ```
 
-Then use `source activate testBuffersort` to ensure that `conda` is installing `buffersort` into your test environment. If everything installs satisfactorally, you may delete the temporary environment and repeat installation into your working environment.
+### conda
+```bash
+conda install -c http://conda.anaconda.org/spearsem buffersort
+```
 
-To install with `conda` navigate to the top-level of the downloaded source and build the package locally. Alternatively, if you elected to grab only `meta.yaml` and the build script, specify the path to the directory in which they reside.
+To install from source with `conda` navigate to the project directory and use
 
 ```bash
 conda build info
-#... conda build /path/to/recipe-dir/
 ```
 
-This will download the code and prepare a build within the internal package directories maintained by `conda`. It will not affect your local directory. 
+This will download the code and prepare a build within the internal package directories maintained by `conda`. It will not affect your local copy of the source code. 
 
 After `conda build` finishes, the built packages must be installed to be available.
 
@@ -47,11 +45,7 @@ After `conda build` finishes, the built packages must be installed to be availab
 conda install --use-local buffersort
 ```
 
-and `conda` will refer to the local build it maintains after the execution of `conda build` for the installation.
-
-### pip
-Pip instructions are forthcoming.
-
+`conda` will refer to the local build it maintains after the execution of `conda build` for the installation.
 
 ## usage
 Assuming you have installed the package, everything can be accessed by importing `buffersort`:
