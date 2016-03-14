@@ -33,7 +33,7 @@ setup(
 
     # Basic library identification parameters
     name         = 'buffersort',
-    version      = '0.0.3',
+    version      = '0.0.4',
     description  = ('Provide a variety of sorting algorithms that operate '
                     'in-place on types that implement the Python buffer '
                     'protocol.'),
@@ -47,7 +47,7 @@ setup(
     author       = 'Ely M. Spears',
     author_email = 'spearsem+buffersort@gmail.com',
     url          = 'https://github.com/spearsem/buffersort', 
-    download_url = 'https://github.com/spearsem/buffersort/tarball/0.0.3', 
+    download_url = 'https://github.com/spearsem/buffersort/tarball/0.0.4', 
     keywords     = ['cython', 'memoryview', 'sorting', 'fused-types'], 
     classifiers  = []
 )

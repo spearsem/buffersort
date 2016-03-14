@@ -1,9 +1,9 @@
 package:
   name: buffersort
-  version: "0.0.3"
+  version: "0.0.4"
  
 source:
-  git_rev: v0.0.3
+  git_rev: v0.0.4
   git_url: https://github.com/spearsem/buffersort.git
 
 # Template for hosting from pypi instead.
